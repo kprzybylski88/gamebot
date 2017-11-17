@@ -67,5 +67,5 @@ class Map {
 }
 var map = new Map(false,false)
 console.log("item name: "+map.giveItems("wombat all",1,1,1));
-//console.log(map.mapJson[1][1][1].items.length>0);
-//module.exports = Map;
+console.log(map.mapJson[1][1][1].items.length>0);
+//module.exports = Map; 
