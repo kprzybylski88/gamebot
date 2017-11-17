@@ -60,6 +60,7 @@ class Map {
 				itemName = newCommArr[0];
 				options = newCommArr[1];
 			}
+			
 			console.log("item name: "+itemName+"\noptions: "+options);
 			return itemName;
 		}
