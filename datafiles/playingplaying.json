@@ -1,0 +1,5 @@
+{"e":"walke","w":"walkw","n":"walkn","s":"walks","u":"walku","d":"walkd",
+"take":"takeitem", "drop":"dropitem",
+"look":"locationdescribe",
+"inventory":"listinventory",
+"inv":"listinventory"}

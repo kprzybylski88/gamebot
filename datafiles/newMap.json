@@ -1,0 +1,53 @@
+{"0":
+	{"0":{
+		"0":{"description":"room 1", "exits":"e, s, u","items":[{"name":"dupa"}]},
+		"1":{"description":"room 10", "exits":"e, s, u, d"},
+		"2":{"description":"room 19", "exits":"e, s, d"}
+		},
+	"1":{
+		"0":{"description":"room 4", "exits":"e, n, s, u"},
+		"1":{"description":"room 13", "exits":"e, n, s, u, d"},
+		"2":{"description":"room 22", "exits":"e, n, s, d"}
+		},
+	"2":{
+		"0":{"description":"room 7", "exits":"e, n, u"},
+		"1":{"description":"room 16", "exits":"e, n, u, d"},
+		"2":{"description":"room 25", "exits":"e, n, d"}
+		}	
+	},
+"1":
+	{"0":{
+		"0":{"description":"room 2", "exits":"e, w, s, u"},
+		"1":{"description":"room 11", "exits":"e, w, s, u, d"},
+		"2":{"description":"room 20", "exits":"e, w, s, d"}
+		},
+	"1":{
+		"0":{"description":"room 5", "exits":"e, w, n, s, u"},
+		"1":{"description":"room 14", "exits":"e, w, n, s, u, d","items":[{"name":"wombat poop"},{"name":"wombat doop"}]},
+		"2":{"description":"room 23", "exits":"e, w, n, s, d"}
+		},
+	"2":{
+		"0":{"description":"room 8", "exits":"e, w, n, u"},
+		"1":{"description":"room 17", "exits":"e, w, n, u, d"},
+		"2":{"description":"room 26", "exits":"e, w, n, d"}
+		}
+	},
+"2":
+	{"0":{
+		"0":{"description":"room 3", "exits":"w, s, u"},
+		"1":{"description":"room 12", "exits":"w, s, u, d"},
+		"2":{"description":"room 21", "exits":"w, s, d"}
+		},
+	"1":{
+		"0":{"description":"room 6", "exits":"w, n, s, u"},
+		"1":{"description":"room 15", "exits":"w, n, s, u, d"},
+		"2":{"description":"room 24", "exits":"w, n, s, d"}
+	},
+	"2":{
+		"0":{"description":"room 9", "exits":"w, n, u"},
+		"1":{"description":"room 18", "exits":"w, n, u, d"},
+		"2":{"description":"room 27", "exits":"w, n, d"}
+	}
+	
+	}
+}

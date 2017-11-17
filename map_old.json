@@ -1,0 +1,13 @@
+{
+	"000":{"description":"room 1", "exits":"e, s, u"}, "100":{"description":"room 2", "exits":"e, w, s, u"}, "200":{"description":"room 3", "exits":"w, s, u"},
+	"010":{"description":"room 4", "exits":"e, n, s, u"}, "110":{"description":"room 5", "exits":"e, w, n, s, u"}, "210":{"description":"room 6", "exits":"w, n, s, u"},
+	"020":{"description":"room 7", "exits":"e, n, u"}, "120":{"description":"room 8", "exits":"e, w, n, u"}, "220":{"description":"room 9", "exits":"w, n, u"},
+	
+	"001":{"description":"room 10", "exits":"e, s, u, d"}, "101":{"description":"room 11", "exits":"e, w, s, u, d"}, "201":{"description":"room 12", "exits":"w, s, u, d"},
+	"011":{"description":"room 13", "exits":"e, n, s, u, d"}, "111":{"description":"room 14", "exits":"e, w, n, s, u, d"}, "211":{"description":"room 15", "exits":"w, n, s, u, d"},
+	"021":{"description":"room 16", "exits":"e, n, u, d"}, "121":{"description":"room 17", "exits":"e, w, n, u, d"}, "221":{"description":"room 18", "exits":"w, n, u, d"},
+	
+	"002":{"description":"room 19", "exits":"e, s, d"}, "102":{"description":"room 20", "exits":"e, w, s, d"}, "202":{"description":"room 21", "exits":"w, s, d"},
+	"012":{"description":"room 22", "exits":"e, n, s, d"}, "112":{"description":"room 23", "exits":"e, w, n, s, d"}, "212":{"description":"room 24", "exits":"w, n, s, d"},
+	"022":{"description":"room 25", "exits":"e, n, d"}, "122":{"description":"room 26", "exits":"e, w, n, d"}, "222":{"description":"room 27", "exits":"w, n, d"}
+}
