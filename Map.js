@@ -1,87 +1,71 @@
 class Map {
-	constructor(position,messageComm,player) {
+	constructor(messageComm,player) {
 		this.messageComm = messageComm;
 		this.player = player;
-		this.position=position;
-		this.mapJson = require("./datafiles/map.json");
+		this.mapJson = require("./datafiles/newMap.json");
 		this.unitName = "Map";
-		this.posForJson = function(current,x,y,z) {
-			if (current){
-				console.log("current");
-				return this.position.x+""+this.position.y+""+this.position.z+"";
+		this.testPosition = function(x,y,z){
+			if (this.mapJson[x][y][z]) {return true} else {return false};
+		};
+		this.describe = function(x,y,z) {
+			var mapField = this.mapJson[x][y][z];
+			if(!mapField) return false;
+			var returnMessage = mapField.description;
+			var items = "";
+			var verb = "is"
+			if (mapField.items.length > 0) {
+				for (var i=0;i<mapField.items.length;++i) {
+					if (i === 1) verb = "are";
+					items += mapField.items[i].name+"\n";
+				}
+			}
+			if (items.length>0) returnMessage+="\n"+items+verb+" lying here";
+			returnMessage+="\npossible exits:\n"+mapField.exits;
+			return returnMessage;	
+		}
+		this.getItemsIndexByName = function(name,x,y,z) {
+			var mapField = this.mapJson[x][y][z];
+			if (!mapField || !mapField.items) return false;
+			var rItems =[];
+			for (var i=0;i<mapField.items.length;++i) {
+				if (mapField.items[i].name.indexOf(name) === 0) rItems.push(i);
+			}
+			if (rItems.length === 0) return false;
+			return rItems;
+		}
+		this.deleteItemsByIndex = function(indexes,x,y,z){
+			try{
+				for(var i=0;i<indexes.length;++i) {
+					this.mapJson[x][y][x].items[indexes[i]]= "deleted";
+				}
+				for (var i=0;i<this.mapJson[x][y][z].items.length;++i) {
+					if (this.mapJson[x][y][z].items[i] === "deleted") {this.mapJson[x][y][z].items.splice(i,1); --i}
+				}
+				console.log(this.mapJson[x][y][z].items);
+			} catch (err) {
+				console.log(err);
+				return false;
+			}
+			return true;
+		}
+		this.giveItems = function(command,x,y,z) {
+			var itemName="";
+			var options="";
+			if (command.indexOf("\"")===0) {
+				var newCommArr = command.split("\"").splice(1);
+				itemName = newCommArr.splice(0,1);
+				options = newCommArr[0];
 			} else {
-				console.log(x+""+y+""+z);
-				return x+""+y+""+z+"";
+				var newCommArr = command.split(" ");
+				itemName = newCommArr[0];
+				options = newCommArr[1];
 			}
-			
+			console.log("item name: "+itemName+"\noptions: "+options);
+			return itemName;
 		}
-		this.describe = function() {
-			messageComm.respond(this.unitName,this.player,this.mapJson[this.posForJson(true)].description);
-		}
-		this.messageComm.on(this.unitName,(author,message)=>{
-			switch(message) { 
-				case "e":
-					if (this.mapJson[this.posForJson(false,this.position.x+1,this.position.y,this.position.z)]) {
-						this.position.x = this.position.x+1;
-						this.describe();
-					} else {
-						messageComm.respond(this.unitName,this.player,"You cannot go there!");
-					}
-					console.log("e");
-					break;
-				case "w":
-					if (this.mapJson[this.posForJson(false,this.position.x-1,this.position.y,this.position.z)]) {
-						this.position.x = this.position.x-1;
-						this.describe();
-					} else {
-						messageComm.respond(this.unitName,this.player,"You cannot go there!");
-					}
-					console.log("w");
-					break;
-				case "s":
-					if (this.mapJson[this.posForJson(false,this.position.x,this.position.y+1,this.position.z)]) {
-						this.position.y = this.position.y+1;
-						this.describe();
-					} else {
-						messageComm.respond(this.unitName,this.player,"You cannot go there!");
-					}
-					console.log("s");
-					break;
-				case "n":
-					if (this.mapJson[this.posForJson(false,this.position.x,this.position.y-1,this.position.z)]) {
-						this.position.y = this.position.y-1;
-						this.describe();
-					} else {
-						messageComm.respond(this.unitName,this.player,"You cannot go there!");
-					}
-					console.log("n");
-					break;
-				case "u":
-					if (this.mapJson[this.posForJson(false,this.position.x,this.position.y,this.position.z+1)]) {
-						this.position.z = this.position.z+1;
-						this.describe();
-					} else {
-						messageComm.respond(this.unitName,this.player,"You cannot go there!");
-					}
-					console.log("u");
-					break;
-				case "d":
-					if (this.mapJson[this.posForJson(false,this.position.x,this.position.y,this.position.z-1)]) {
-						this.position.z = this.position.z-1;
-						this.describe();
-					} else {
-						messageComm.respond(this.unitName,this.player,"You cannot go there!");
-					}
-					console.log("u");
-					break;
-				case "describe":
-					this.describe();
-					break;
-				
-			}
-			this.messageComm.processMessage("Hero",this.player,"positionUpdate"+this.position.x+""+this.position.y+""+this.position.y);
-			
-		});
 	}
 }
-module.exports = Map;
+var map = new Map(false,false)
+console.log("item name: "+map.giveItems("wombat all",1,1,1));
+//console.log(map.mapJson[1][1][1].items.length>0);
+//module.exports = Map;
