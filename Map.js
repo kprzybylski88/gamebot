@@ -13,7 +13,7 @@ class Map {
 			var returnMessage = mapField.description;
 			var items = "";
 			var verb = "is"
-			if (mapField.items.length > 0) {
+			if (mapField.items) {
 				for (var i=0;i<mapField.items.length;++i) {
 					if (i === 1) verb = "are";
 					items += mapField.items[i].name+"\n";
@@ -49,22 +49,17 @@ class Map {
 			return true;
 		}
 		this.giveItems = function(command,x,y,z) {
-			var itemName="";
-			var options="";
+			console.log(command);
+			//return false;
+			var itemName=command[0];
+			console.log(itemName);
+			var options=command[1];
 			var toDelete=[];
 			var toReturn=[];
-			if (command.indexOf("\"")===0) {
-				var newCommArr = command.split("\"").splice(1);
-				itemName = newCommArr.splice(0,1);
-				options = newCommArr[0];
-			} else {
-				var newCommArr = command.split(" ");
-				itemName = newCommArr[0];
-				if (newCommArr.length>1) options = newCommArr[1];
-			}
 			var itemsIndex = this.getItemsIndexByName(itemName,x,y,z);
 			if (!itemsIndex) return false;
-			if (options.length === 0) {
+			if (!options) {
+				//console.log(options);
 				toReturn.push(this.mapJson[x][y][z].items[itemsIndex[0]]);
 				toDelete.push(itemsIndex[0]);
 			} else if (options === "all") {
@@ -91,6 +86,7 @@ class Map {
 		}
 
 		this.takeItems = function(items,x,y,z) {
+			if(!items) return false;
 			if (!this.mapJson[x][y][z]) return false;
 			if (!this.mapJson[x][y][z].items) this.mapJson[x][y][z].items=[];
 			for (var i = 0; i<items.length; ++i) {
@@ -100,9 +96,9 @@ class Map {
 		}
 	}
 }
-var map = new Map(false,false)
+//var map = new Map(false,false)
 //console.log("item name: "+map.giveItems("wombat all",1,1,1)[0].name);
-map.takeItems([{"name":"foo"},{"name":"bar"}],1,1,1);
+//map.takeItems([{"name":"foo"},{"name":"bar"}],1,1,1);
 
-console.log(map.mapJson[1][1][1].items.length);
-//module.exports = Map; 
+//console.log(map.mapJson[1][1][1].items.length);
+module.exports = Map; 

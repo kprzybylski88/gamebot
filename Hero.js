@@ -28,33 +28,13 @@ class Hero {
 		} else {
 			this.createHero();
 		}
-		this.describe = function() {
-				var mapField = this.map[this.position.x][this.position.y][this.position.z];
-				//this.messageComm.respond(this.unitName,this.player,mapField.description);
-				var items = "";
-				var verb = "is"
-				try {
-					for (var i=0;true;++i) {
-						if (!mapField.items[i]) break;
-						if (i === 1) verb = "are";
-						items += mapField.items[i].name+"\n";
-					}
-					//this.messageComm.respond(this.unitName,this.player,items+"are lying here");
-				} catch (err) {
-					console.log("nothing to see here")
-				}
-				var message = mapField.description;
-				if (items.length>0) message+="\n"+items+verb+" lying here";
-				message+="\npossible exits:\n"+mapField.exits;
-				this.messageComm.respond(this.unitName,this.player,message);
-				//console.log(mapField);
-		}
 		
 		this.listInventory = function() {
 			var items = ""
 			for(var i=0; i<this.inventory.length;++i) {
-				items+="\n"+this.inventory[i].name
+				items+="\n"+this.inventory[i].name;
 			}
+			if (items.length === 0) items = " nothing"
 			this.messageComm.respond(this.unitName,this.player,"You carry:"+items);
 		}
 		
@@ -71,93 +51,75 @@ class Hero {
 			return allItems;
 			
 		}
-		this.take = function(itemCommand) {
-			var mapFieldItems = this.map[this.position.x][this.position.y][this.position.z].items;
-			if (!mapFieldItems || mapFieldItems.length === 0) {
-				this.messageComm.respond(this.unitName,this.player,"Nothing to pick up! This is embarassing! :see_no_evil:")
-				return false;
+		this.take = function(items) {
+			if (!items) return false;
+			for (var i = 0; i<items.length;++i) {
+				this.inventory.push(items[i]);
 			}
-			var item = itemCommand.shift();
-			var itemsWithName = this.retrieveAllItems(item,mapFieldItems);
-			if (!itemsWithName) {
-				this.messageComm.respond(this.unitName,this.player,"No such item found");
-				return false;
-			}
+		}
+
+		this.getItemsIndexByName = function(name) {
 			
-			if (itemCommand.length>0) {
-				if (itemCommand[0] === "all"){
-					var itemsForMessage = "";
-					//console.log(itemsWithName);
-					for (var i=0;i<itemsWithName.length;++i) {
-						var itemToInsert = this.map[this.position.x][this.position.y][this.position.z].items.splice(itemsWithName[i]-i,1);
-						itemsForMessage += itemToInsert[0].name+" ";
-						this.inventory.push(itemToInsert[0])
-					}
-					if (itemsForMessage.length > 0) {
-						this.messageComm.respond(this.unitName,this.player,itemsForMessage+"taken");
-					} else {
-						this.messageComm.respond(this.unitName,this.player,"No such item found");
-					}
-				} else {
-					try {
-						var itemToInsert = this.map[this.position.x][this.position.y][this.position.z].items.splice(itemsWithName[itemCommand-1],1);
-						this.inventory.push(itemToInsert[0]);
-						this.messageComm.respond(this.unitName,this.player,itemToInsert[0].name+" taken");
-					} catch(err){
-						console.log("No item taken");
-						this.messageComm.respond(this.unitName,this.player,"Unfortunately, you took nothing.");
-					}
-				}
-			} else {
-				var itemToInsert = this.map[this.position.x][this.position.y][this.position.z].items.splice(itemsWithName[0],1);
-				this.inventory.push(itemToInsert[0]);
-				this.messageComm.respond(this.unitName,this.player,itemToInsert[0].name+" taken");
+			if (this.inventory.length===0) return false;
+			var rItems =[];
+			for (var i=0;i<this.inventory.length;++i) {
+				if (this.inventory[i].name.indexOf(name) === 0) rItems.push(i);
 			}
-			//console.log(this.map.items);
-			//console.log(this.inventory);
+			if (rItems.length === 0) return false;
+			return rItems;
+		}
+		this.deleteItemsByIndex = function(indexes){
+			try{
+				for(var i=0;i<indexes.length;++i) {
+					this.inventory[indexes[i]]= "deleted";
+				}
+				for (var i=0;i<this.inventory.length;++i) {
+					if (this.inventory[i] === "deleted") {this.inventory.splice(i,1); --i}
+				}
+				console.log(this.inventory);
+			} catch (err) {
+				console.log(err);
+				return false;
+			}
+			return true;
 		}
 		
-		this.drop = function(itemCommand) {
+		this.drop = function(command) {
 			if (this.inventory.length === 0) {
 				this.messageComm.respond(this.unitName,this.player,"You have nothing to drop. Poor you");
 				return false;
 			}
-			var item = itemCommand.shift()
-			var itemsWithName = this.retrieveAllItems(item,this.inventory);
-			if (!itemsWithName) {
-				this.messageComm.respond(this.unitName,this.player,"Unfortunately, you don't have this.");
-				return false;
-			}
-			if (!this.map[this.position.x][this.position.y][this.position.z].items) this.map[this.position.x][this.position.y][this.position.z].items =[];
-			
-			if (itemCommand.length === 0) {
-				var itemToDrop = this.inventory.splice(itemsWithName[0],1);
-				this.map[this.position.x][this.position.y][this.position.z].items.push(itemToDrop[0]);
-				this.messageComm.respond(this.unitName,this.player,"You dropped: "+itemToDrop[0].name);
-				return true;
-			}
-			if(itemCommand[0] === "all") {
-				var itemsForMessage = "";
-				for (var i=0;i<itemsWithName.length;++i) {
-					var itemToDrop = this.inventory.splice(itemsWithName[i]-i,1);
-					itemsForMessage += itemToDrop[0].name+" ";
-					this.map[this.position.x][this.position.y][this.position.z].items.push(itemToDrop[0]);
-				}
-				if (itemsForMessage.length > 0) {
-						this.messageComm.respond(this.unitName,this.player,itemsForMessage+"dropped");
-				} else {
-					this.messageComm.respond(this.unitName,this.player,"No such item found");
+			var itemName=command[0];
+			console.log(itemName);
+			var options=command[1];
+			var toDelete=[];
+			var toReturn=[];
+			var itemsIndex = this.getItemsIndexByName(itemName);
+			if (!itemsIndex) return false;
+			if (!options) {
+				toReturn.push(this.inventory[itemsIndex[0]]);
+				toDelete.push(itemsIndex[0]);
+			} else if (options === "all") {
+				for (var i = 0;i<itemsIndex.length;++i) {
+					toReturn.push(this.inventory[itemsIndex[i]]);
+					toDelete.push(itemsIndex[i]);
 				}
 			} else {
-			try {
-					var itemToDrop = this.inventory.splice(itemsWithName[itemCommand-1],1);
-					this.map[this.position.x][this.position.y][this.position.z].items.push(itemToDrop[0]);
-					this.messageComm.respond(this.unitName,this.player,itemDrop[0].name+" dropped.");
-				} catch(err){
-					console.log("No item dropped");
-					this.messageComm.respond(this.unitName,this.player,"Unfortunately, you dropped nothing.");
+				try {
+					toReturn.push(this.inventory[itemsIndex[options-1]]);
+					toDelete.push(itemsIndex[options-1]);
+				} catch (err) {
+					console.log(err);
+					return false;
 				}
 			}
+
+			console.log("item name: "+itemName+"\noptions: "+options);
+			if (toReturn.length>0) {
+				this.deleteItemsByIndex(toDelete);
+				return toReturn;
+			}
+			return false;
 			
 		}
 		
@@ -166,11 +128,11 @@ class Hero {
 		
 		this.walk = function(x,y,z) {
 			try {
-				this.map[this.position.x+x][this.position.y+y][this.position.z+z]
+				//this.map[this.position.x+x][this.position.y+y][this.position.z+z]
 				this.position.x+=x;
 				this.position.y+=y;
 				this.position.z+=z;
-				this.describe();
+				//this.describe();
 			} catch (err) {
 				this.messageComm.respond(this.unitName,this.player,"You cannot go there!");
 			}

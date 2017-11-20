@@ -1,44 +1,51 @@
 const Hero = require("./Hero.js");
+const Map = require("./Map.js")
 const CommandDispatcher = require("./commandDispatcher.js");
 class Game {
 	constructor(player, messageComm) {
+		this.map = new Map(player,messageComm);
 		this.messageComm = messageComm; 
 		this.commandDispatcher = new CommandDispatcher(this.messageComm,this.player);
 		this.act = function(commandWithArgs) {
 			console.log (this.state)
 			switch(commandWithArgs.command) {
 				case "renamehero" :
-					if (this.hero.rename(commandWithArgs.args) === "playing") {this.state="playing";console.log("changed! "+this.state)}
+					if (this.hero.rename(commandWithArgs.args) === "playing") {
+						this.state="playing";this.messageComm.respond(this.unitName,this.player,this.map.describe(this.hero.position.x,this.hero.position.y,this.hero.position.z));
+					}
 					break;
-				case "walke": 
-					this.hero.walk(1,0,0);
+				case "walke":
+					this.movement(1,0,0);
 					break;
 				case "walks": 
-					this.hero.walk(0,1,0);
+					this.movement(0,1,0);
 					break;
 				case "walku": 
-					this.hero.walk(0,0,1);
+					this.movement(0,0,1);
 					break;
 				case "walkw": 
-					this.hero.walk(-1,0,0);
+					this.movement(-1,0,0);
 					break;
 				case "walkn": 
-					this.hero.walk(0,-1,0);
+					this.movement(0,-1,0);
 					break;
 				case "walkd": 
-					this.hero.walk(0,0,-1);
+					this.movement(0,0,-1);
 					break;
-				case "takeitem": 
-					this.hero.take(commandWithArgs.args);
+				case "takeitem":
+					var items = this.map.giveItems(commandWithArgs.args,this.hero.position.x,this.hero.position.y,this.hero.position.z);
+					console.log (items);
+					if (items) this.hero.take(items);
 					break;
 				case "locationdescribe":
-					this.hero.describe();
+					this.messageComm.respond(this.unitName,this.player,this.map.describe(this.hero.position.x,this.hero.position.y,this.hero.position.z));
 					break;
 				case "listinventory":
 					this.hero.listInventory();
 					break;
 				case "dropitem":
-					this.hero.drop(commandWithArgs.args);
+					var items = this.hero.drop(commandWithArgs.args);
+					if (items) this.map.takeItems(items,this.hero.position.x,this.hero.position.y,this.hero.position.z);
 					break;
 			}
 		}
@@ -91,5 +98,14 @@ class Game {
 		
 	}
 	
+
+	movement(x,y,z) {
+		if (this.map.testPosition(this.hero.position.x + x, this.hero.position.y + y, this.hero.position.z + z)) {
+			this.hero.walk(x, y, z);
+			this.messageComm.respond(this.unitName,this.player,this.map.describe(this.hero.position.x,this.hero.position.y,this.hero.position.z));
+		} else {
+			this.messageComm.respond(this.unitName,this.player,"You cannot go there");
+		}
+	}
 }
 module.exports = Game;
